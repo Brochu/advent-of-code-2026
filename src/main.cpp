@@ -23,7 +23,7 @@ int main(int argc, char **argv) {
     memset(part2, 0, ANS_SIZE);
 
     int res = solve(part1, part2);
-    printf("[AoC2025] Solved with code %i\n", res);
+    printf("[AoC2026] Solved with code %i\n", res);
     printf("    - Part1 : '%s'\n", part1);
     printf("    - Part2 : '%s'\n", part2);
 
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 
 // !! INPUT CONVERTER !!
 void convert_file(const char *from, const char *to) {
-    printf("[AoC2025] Convert tool | '%s' -> '%s'\n", from, to);
+    printf("[AoC2026] Convert tool | '%s' -> '%s'\n", from, to);
 
     FILE *f;
     fopen_s(&f, from, "rb");
@@ -43,8 +43,8 @@ void convert_file(const char *from, const char *to) {
     char *content = (char *)malloc(fsize + 1);
     fread_s(content, fsize, 1, fsize, f);
     content[fsize] = '\0';
-    printf("[AoC2025] fsize = %ld\n", fsize);
-    printf("[AoC2025] Content = \n'%s'\n", content);
+    printf("[AoC2026] fsize = %ld\n", fsize);
+    printf("[AoC2026] Content = \n'%s'\n", content);
 
     fclose(f);
 

@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include "day.hpp"
 #include "parse.hpp"
 #include "timer.hpp"

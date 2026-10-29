@@ -16,9 +16,9 @@ inline strview sv(const char *s) {
 strview sv_find(strview haystack, strview needle);
 strview sv_find(strview haystack, const char *needle);
 
-// Returns a darray, release it with arr_free.
-strview *sv_split(strview str, strview delim);
-strview *sv_split(strview str, const char *delim);
+// Appends the parts to *out, a darray owned by the caller.
+void sv_split(strview str, strview delim, strview **out);
+void sv_split(strview str, const char *delim, strview **out);
 
 bool sv_split_once(strview str, strview delim, strview* first, strview* second);
 bool sv_split_once(strview str, const char *delim, strview* first, strview* second);

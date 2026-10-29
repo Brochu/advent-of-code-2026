@@ -82,8 +82,8 @@ strview sv_find(strview haystack, const char *needle) {
     return sv_find(haystack, sv(needle));
 }
 
-strview *sv_split(strview str, strview delim) {
-    strview *result = (strview *)arr_init(strview);
+void sv_split(strview str, strview delim, strview **out) {
+    strview *result = *out; // arr_push expands a[i], which breaks with *out
     size_t pos = 0;
 
     while (pos < str.len) {
@@ -98,10 +98,10 @@ strview *sv_split(strview str, strview delim) {
         arr_push(result, part);
         pos = end + delim.len; // skip over the whole delimiter
     }
-    return result;
+    *out = result;
 }
-strview *sv_split(strview str, const char *delim) {
-    return sv_split(str, sv(delim));
+void sv_split(strview str, const char *delim, strview **out) {
+    sv_split(str, sv(delim), out);
 }
 
 bool sv_split_once(strview str, strview delim, strview* first, strview* second) {
@@ -146,7 +146,7 @@ double GetElapsedTime(uint64_t a, uint64_t b) {
 // -----------------------------------------------------------------------------
 
 // -----------------------------------------------------------------------------
-// !! TIMER !!
+// !! DARRAY !!
 void *_arr_init(size_t it_size, size_t cap) {
     void *ptr = 0;
 

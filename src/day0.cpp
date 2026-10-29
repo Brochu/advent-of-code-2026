@@ -10,6 +10,8 @@ char in[] = {
 strview input { in, strlen(in) };
 
 int solve(char p1[ANS_SIZE], char p2[ANS_SIZE]) {
+    printf(SV_FMT "\n\n", SV_ARG(input));
+
     print_res(p1, "%i", 0);
     print_res(p2, "%i", 0);
     return 0;

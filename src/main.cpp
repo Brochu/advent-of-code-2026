@@ -90,7 +90,6 @@ strview sv_find(strview haystack, const char *needle) {
 }
 
 void sv_split(strview str, strview delim, strview **out) {
-    strview *result = *out; // arr_push expands a[i], which breaks with *out
     size_t pos = 0;
 
     while (pos < str.len) {
@@ -98,14 +97,13 @@ void sv_split(strview str, strview delim, strview **out) {
         size_t end = (sv_find(start, delim).ptr - str.ptr);
         if (end >= str.len) {
             strview last = { str.ptr + pos, str.len - pos };
-            arr_push(result, last);
+            arr_push(out, last);
             break;
         }
         strview part = { str.ptr + pos, end - pos };
-        arr_push(result, part);
+        arr_push(out, part);
         pos = end + delim.len; // skip over the whole delimiter
     }
-    *out = result;
 }
 void sv_split(strview str, const char *delim, strview **out) {
     sv_split(str, sv(delim), out);
@@ -193,7 +191,7 @@ void _arr_erase(void *arr, size_t i) {
     arr_meta *h = arr_header(arr);
     assert(i < h->size);
     char *base = (char *)arr;
-    memmove(base + (i * h->item_size), base + ((i+1) * h->item_size), (h->size - (i + 1)) * h->item_size);
+    memmove(base + (i * h->item_size), base + ((i + 1) * h->item_size), (h->size - (i + 1)) * h->item_size);
     h->size--;
 }
 // -----------------------------------------------------------------------------

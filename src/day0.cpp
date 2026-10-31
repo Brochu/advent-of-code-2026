@@ -12,8 +12,8 @@ strview input { in, strlen(in) };
 int solve(char p1[ANS_SIZE], char p2[ANS_SIZE]) {
     u64 start = time_get_counter();
 
-    strview *groups= (strview *)arr_init(strview);
-    strview *items= (strview *)arr_init(strview);
+    strview *groups = arr_init<strview>();
+    strview *items = arr_init<strview>();
     sv_split(input, sv("\n\n"), &groups);
 
     size_t len = arr_size(groups);

@@ -1,5 +1,5 @@
 #pragma once
-#include <stdint.h>
+#include "day.hpp"
 
-uint64_t GetPerfCounter();
-double GetElapsedTime(uint64_t a, uint64_t b);
+u64 time_get_counter();
+f64 time_elapsed_seconds(u64 a, u64 b);

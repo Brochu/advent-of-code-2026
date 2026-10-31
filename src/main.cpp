@@ -11,6 +11,13 @@
 void convert_file(const char *from, const char *to);
 
 int main(int argc, char **argv) {
+    /*
+    // Fully buffer stdout: output reaches the console in one write at exit
+    // instead of one slow console write per printf.
+    static char out_buf[1 << 20];
+    setvbuf(stdout, out_buf, _IOFBF, sizeof(out_buf));
+    */
+
     if (argc >= 4 && strcmp(argv[1], "xvert") == 0) {
         convert_file(argv[2], argv[3]);
         return 0;
@@ -23,7 +30,7 @@ int main(int argc, char **argv) {
     memset(part2, 0, ANS_SIZE);
 
     int res = solve(part1, part2);
-    printf("[AoC2026] Solved with code %i\n", res);
+    printf("[AoC2026] Day %i solved with code %i\n", DAY, res);
     printf("    - Part1 : '%s'\n", part1);
     printf("    - Part2 : '%s'\n", part2);
 
@@ -123,7 +130,7 @@ bool sv_split_once(strview str, const char *delim, strview* first, strview* seco
 // !! TIMER !!
 LARGE_INTEGER freq = { 0 };
 
-uint64_t GetPerfCounter() {
+u64 time_get_counter() {
     LARGE_INTEGER counter;
     if (!QueryPerformanceCounter(&counter)) {
         return 0; // Could not query perf counter
@@ -132,7 +139,7 @@ uint64_t GetPerfCounter() {
     return counter.QuadPart;
 }
 
-double GetElapsedTime(uint64_t a, uint64_t b) {
+f64 time_elapsed_seconds(u64 a, u64 b) {
     if (freq.QuadPart == 0) {
         if (!QueryPerformanceFrequency(&freq)) {
             return -1.0; // Could not query perf frequency
@@ -150,8 +157,8 @@ double GetElapsedTime(uint64_t a, uint64_t b) {
 void *_arr_init(size_t it_size, size_t cap) {
     void *ptr = 0;
 
-    size_t size = (it_size * cap) + sizeof(header);
-    header *h = (header *)malloc(size);
+    size_t size = (it_size * cap) + sizeof(arr_meta);
+    arr_meta *h = (arr_meta *)malloc(size);
     if (h) {
         h->size = 0;
         h->cap = cap;
@@ -163,7 +170,7 @@ void *_arr_init(size_t it_size, size_t cap) {
 }
 
 void _arr_adapt(void **arr, size_t count) {
-    header *h = arr_header(*arr);
+    arr_meta *h = arr_header(*arr);
     size_t target_cap = h->size + count;
     //printf("[ARR] Adapting array (count = %lld; item size = %lld)\n", count, h->item_size);
 
@@ -173,39 +180,20 @@ void _arr_adapt(void **arr, size_t count) {
             new_cap *= 2;
         }
 
-        size_t new_size = (new_cap * h->item_size) + sizeof(header);
-        header *new_h = (header *)malloc(new_size); //TODO: Replace with realloc?
-        if (new_h) {
-            size_t old_size = (h->size * h->item_size) + sizeof(*h);
-            memcpy(new_h, h, old_size);
-            free(h);
+        size_t new_size = (new_cap * h->item_size) + sizeof(arr_meta);
+        arr_meta *new_h = (arr_meta *)realloc(h, new_size);
+        assert(new_h);
 
-            new_h->cap = new_cap;
-            *arr = (header*)new_h + 1;
-        } else {
-            *arr = NULL;
-        }
+        new_h->cap = new_cap;
+        *arr = (arr_meta *)new_h + 1;
     }
 }
 
-void _arr_popback(void *arr) {
-    arr_header(arr)->size--;
-}
-
-void _arr_erase(void *arr, size_t i, void *from, void *to) {
-    header *h = arr_header(arr);
-    if (i == h->size - 1 || h->size == 1) {
-        arr_popback(arr);
-        return;
-    }
-    //printf("[ARR] Erase element at %lld, elem = %f, %f\n", i, *(double*)from, *(double*)to);
-    size_t size = (h->size - (i + 1)) * h->item_size;
-
-    memmove(to, from, size);
+void _arr_erase(void *arr, size_t i) {
+    arr_meta *h = arr_header(arr);
+    assert(i < h->size);
+    char *base = (char *)arr;
+    memmove(base + (i * h->item_size), base + ((i+1) * h->item_size), (h->size - (i + 1)) * h->item_size);
     h->size--;
-}
-
-void _arr_free(void *arr) {
-    free(arr_header(arr));
 }
 // -----------------------------------------------------------------------------

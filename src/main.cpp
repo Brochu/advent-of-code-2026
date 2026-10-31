@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <windows.h>
 
-#include "darray.h"
+#include "darray.hpp"
 #include "day.hpp"
 #include "parse.hpp"
 #include "timer.hpp"

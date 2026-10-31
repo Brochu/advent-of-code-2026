@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "darray.hpp"
 #include "day.hpp"
 #include "parse.hpp"
 #include "timer.hpp"

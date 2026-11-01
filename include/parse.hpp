@@ -2,7 +2,7 @@
 
 #include <string.h>
 
-#include "darray.h"
+#include "darray.hpp"
 
 struct strview {
     const char* ptr;

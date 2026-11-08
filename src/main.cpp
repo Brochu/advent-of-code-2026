@@ -7,10 +7,11 @@
 #include "day.hpp"
 #include "parse.hpp"
 #include "timer.hpp"
+#include "types.hpp"
 
 void convert_file(const char *from, const char *to);
 
-int main(int argc, char **argv) {
+i32 main(i32 argc, char **argv) {
     /*
     // Fully buffer stdout: output reaches the console in one write at exit
     // instead of one slow console write per printf.
@@ -23,13 +24,13 @@ int main(int argc, char **argv) {
         return 0;
     }
 
-    char part1[ANS_SIZE];
+    i8 part1[ANS_SIZE];
     memset(part1, 0, ANS_SIZE);
 
-    char part2[ANS_SIZE];
+    i8 part2[ANS_SIZE];
     memset(part2, 0, ANS_SIZE);
 
-    int res = solve(part1, part2);
+    i32 res = solve(part1, part2);
     printf("[AoC2026] Day %i solved with code %i\n", DAY, res);
     printf("    - Part1 : '%s'\n", part1);
     printf("    - Part2 : '%s'\n", part2);
@@ -58,7 +59,7 @@ void convert_file(const char *from, const char *to) {
     fopen_s(&f, to, "wb");
     static int cols = 18;
 
-    for (size_t i = 0; i <= fsize; i++) {
+    for (u64 i = 0; i <= fsize; i++) {
         fprintf_s(f, "0x%02x,", content[i]);
 
         if (((i+1) % cols) == 0) {
@@ -77,7 +78,7 @@ strview sv_find(strview haystack, strview needle) {
         return { nullptr, 0 };
     }
 
-    for (size_t i = 0; i <= haystack.len - needle.len; i++) {
+    for (u64 i = 0; i <= haystack.len - needle.len; i++) {
         if (memcmp(haystack.ptr + i, needle.ptr, needle.len) == 0) {
             return { haystack.ptr + i, needle.len };
         }
@@ -90,11 +91,11 @@ strview sv_find(strview haystack, const char *needle) {
 }
 
 void sv_split(strview str, strview delim, strview **out) {
-    size_t pos = 0;
+    u64 pos = 0;
 
     while (pos < str.len) {
         strview start(str.ptr + pos, str.len - pos);
-        size_t end = (sv_find(start, delim).ptr - str.ptr);
+        u64 end = (sv_find(start, delim).ptr - str.ptr);
         if (end >= str.len) {
             strview last = { str.ptr + pos, str.len - pos };
             arr_push(out, last);
@@ -115,7 +116,7 @@ bool sv_split_once(strview str, strview delim, strview* first, strview* second) 
         return false;
     }
 
-    size_t pos = found.ptr - str.ptr;
+    u64 pos = found.ptr - str.ptr;
 
     *first = { str.ptr, pos };
     *second = { found.ptr + delim.len, str.len - pos - delim.len };
@@ -152,10 +153,10 @@ f64 time_elapsed_seconds(u64 a, u64 b) {
 
 // -----------------------------------------------------------------------------
 // !! DARRAY !!
-void *_arr_init(size_t it_size, size_t cap) {
+void *_arr_init(u64 it_size, u64 cap) {
     void *ptr = 0;
 
-    size_t size = (it_size * cap) + sizeof(arr_meta);
+    u64 size = (it_size * cap) + sizeof(arr_meta);
     arr_meta *h = (arr_meta *)malloc(size);
     if (h) {
         h->size = 0;
@@ -167,18 +168,18 @@ void *_arr_init(size_t it_size, size_t cap) {
     return ptr;
 }
 
-void _arr_adapt(void **arr, size_t count) {
+void _arr_adapt(void **arr, u64 count) {
     arr_meta *h = arr_header(*arr);
-    size_t target_cap = h->size + count;
+    u64 target_cap = h->size + count;
     //printf("[ARR] Adapting array (count = %lld; item size = %lld)\n", count, h->item_size);
 
     if (h->cap < target_cap) {
-        size_t new_cap = h->cap * 2;
+        u64 new_cap = h->cap * 2;
         while (new_cap < target_cap) {
             new_cap *= 2;
         }
 
-        size_t new_size = (new_cap * h->item_size) + sizeof(arr_meta);
+        u64 new_size = (new_cap * h->item_size) + sizeof(arr_meta);
         arr_meta *new_h = (arr_meta *)realloc(h, new_size);
         assert(new_h);
 
@@ -187,7 +188,7 @@ void _arr_adapt(void **arr, size_t count) {
     }
 }
 
-void _arr_erase(void *arr, size_t i) {
+void _arr_erase(void *arr, u64 i) {
     arr_meta *h = arr_header(arr);
     assert(i < h->size);
     char *base = (char *)arr;

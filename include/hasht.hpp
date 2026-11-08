@@ -4,7 +4,21 @@
 #include <bit>
 #include <stdlib.h>
 
-static constexpr size_t _HASH_TABLE_CAPACITY = 8;
+#include "parse.hpp"
+#include "types.hpp"
+
+inline u64 hash(u64 key) {
+    return 0;
+}
+inline u64 hash(strview key) {
+    return 0;
+}
+
+template <typename T>
+inline bool key_eq(T a, T b) { return a == b; }
+inline bool key_eq(strview a, strview b) { return a.len == b.len && memcmp(a.ptr, b.ptr, a.len) == 0; }
+
+static constexpr u64 _HASH_TABLE_CAPACITY = 8;
 
 template <typename K, typename V>
 struct hash_table {
@@ -12,17 +26,19 @@ struct hash_table {
     V *values;
     char *used;
     
-    size_t cap;
-    size_t size;
+    u64 cap;
+    u64 size;
     
-    static hash_table init(size_t capacity = _HASH_TABLE_CAPACITY);
+    static hash_table init(u64 capacity = _HASH_TABLE_CAPACITY);
+    bool has(K key);
     V *get(K key);
+
     void put(K key, V val);
     void free_hash();
 };
 
 template <typename K, typename V>
-hash_table<K, V> hash_table<K, V>::init(size_t capacity) {
+hash_table<K, V> hash_table<K, V>::init(u64 capacity) {
     hash_table t = { };
     t.cap = std::bit_ceil(capacity);
     t.size = 0;
@@ -35,6 +51,12 @@ hash_table<K, V> hash_table<K, V>::init(size_t capacity) {
     assert(t.used);
     
     return t;
+}
+
+template <typename K, typename V>
+bool hash_table<K, V>::has(K key) {
+    //TODO: Lookup if key exists
+    return false;
 }
 
 template <typename K, typename V>

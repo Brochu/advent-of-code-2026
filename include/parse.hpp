@@ -3,10 +3,11 @@
 #include <string.h>
 
 #include "darray.hpp"
+#include "types.hpp"
 
 struct strview {
     const char* ptr;
-    size_t len;
+    u64 len;
 };
 
 inline strview sv(const char *s) {

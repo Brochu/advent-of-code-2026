@@ -24,10 +24,10 @@ i32 main(i32 argc, char **argv) {
         return 0;
     }
 
-    i8 part1[ANS_SIZE];
+    char part1[ANS_SIZE];
     memset(part1, 0, ANS_SIZE);
 
-    i8 part2[ANS_SIZE];
+    char part2[ANS_SIZE];
     memset(part2, 0, ANS_SIZE);
 
     i32 res = solve(part1, part2);

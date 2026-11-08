@@ -11,7 +11,7 @@ char in[] = {
 };
 strview input { in, strlen(in) };
 
-i32 solve(i8 p1[ANS_SIZE], i8 p2[ANS_SIZE]) {
+i32 solve(char p1[ANS_SIZE], char p2[ANS_SIZE]) {
     u64 start = time_get_counter();
 
     strview *groups = arr_init<strview>();

@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <type_traits>
 
 #include "types.hpp"
 
@@ -28,7 +29,7 @@ void _arr_erase(void *arr, u64 i);
 template <typename T> T *arr_init(u64 capacity = _ARR_INIT_CAP) { return (T *)_arr_init(sizeof(T), capacity); }
 
 template <typename T>
-void arr_push(T **a, T v) {
+void arr_push(T **a, std::type_identity_t<T> v) {
     _arr_adapt((void **)a, 1);
 
     T *arr = *a;

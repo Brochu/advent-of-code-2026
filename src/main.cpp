@@ -60,6 +60,9 @@ void convert_file(const char *from, const char *to) {
     static int cols = 18;
 
     for (u64 i = 0; i <= fsize; i++) {
+        if (content[i] == '\r') {
+            continue;
+        }
         fprintf_s(f, "0x%02x,", content[i]);
 
         if (((i+1) % cols) == 0) {
@@ -95,7 +98,13 @@ void sv_split(strview str, strview delim, strview **out) {
 
     while (pos < str.len) {
         strview start(str.ptr + pos, str.len - pos);
-        u64 end = (sv_find(start, delim).ptr - str.ptr);
+        u64 end = str.len;
+
+        strview found = sv_find(start, delim);
+        if (found.ptr != nullptr) {
+            end = found.ptr - str.ptr;
+        }
+
         if (end >= str.len) {
             strview last = { str.ptr + pos, str.len - pos };
             arr_push(out, last);
@@ -154,6 +163,7 @@ f64 time_elapsed_seconds(u64 a, u64 b) {
 // -----------------------------------------------------------------------------
 // !! DARRAY !!
 void *_arr_init(u64 it_size, u64 cap) {
+    assert(cap != 0);
     void *ptr = 0;
 
     u64 size = (it_size * cap) + sizeof(arr_meta);

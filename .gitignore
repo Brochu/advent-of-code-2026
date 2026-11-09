@@ -1,3 +1,7 @@
+# Puzzle inputs and AoC session cookie
+inputs/
+.aoc_session
+
 # Prerequisites
 *.d
 

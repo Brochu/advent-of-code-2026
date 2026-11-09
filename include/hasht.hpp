@@ -26,7 +26,7 @@ inline u64 hash(strview key) {
 
 template <typename T>
 inline bool key_eq(T a, T b) { return a == b; }
-inline bool key_eq(strview a, strview b) { return a.len == b.len && memcmp(a.ptr, b.ptr, a.len) == 0; }
+inline bool key_eq(strview a, strview b) { return sv_eq(a, b); }
 
 static constexpr u64 _HASH_TABLE_CAPACITY = 8;
 

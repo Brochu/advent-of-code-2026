@@ -9,8 +9,6 @@
 #include "timer.hpp"
 #include "types.hpp"
 
-void convert_file(const char *from, const char *to);
-
 i32 main(i32 argc, char **argv) {
     /*
     // Fully buffer stdout: output reaches the console in one write at exit
@@ -18,16 +16,10 @@ i32 main(i32 argc, char **argv) {
     static char out_buf[1 << 20];
     setvbuf(stdout, out_buf, _IOFBF, sizeof(out_buf));
     */
-
-    if (argc >= 4 && strcmp(argv[1], "xvert") == 0) {
-        convert_file(argv[2], argv[3]);
-        return 0;
-    }
-
     char part1[ANS_SIZE];
-    memset(part1, 0, ANS_SIZE);
-
     char part2[ANS_SIZE];
+
+    memset(part1, 0, ANS_SIZE);
     memset(part2, 0, ANS_SIZE);
 
     i32 res = solve(part1, part2);
@@ -38,44 +30,12 @@ i32 main(i32 argc, char **argv) {
     return 0;
 }
 
-// !! INPUT CONVERTER !!
-void convert_file(const char *from, const char *to) {
-    printf("[AoC2026] Convert tool | '%s' -> '%s'\n", from, to);
-
-    FILE *f;
-    fopen_s(&f, from, "rb");
-    fseek(f, 0, SEEK_END);
-    long fsize = ftell(f);
-    rewind(f);
-
-    char *content = (char *)malloc(fsize + 1);
-    fread_s(content, fsize, 1, fsize, f);
-    content[fsize] = '\0';
-    printf("[AoC2026] fsize = %ld\n", fsize);
-    printf("[AoC2026] Content = \n'%s'\n", content);
-
-    fclose(f);
-
-    fopen_s(&f, to, "wb");
-    static int cols = 18;
-
-    for (u64 i = 0; i <= fsize; i++) {
-        if (content[i] == '\r') {
-            continue;
-        }
-        fprintf_s(f, "0x%02x,", content[i]);
-
-        if (((i+1) % cols) == 0) {
-            fprintf_s(f, "\n");
-        }
-    }
-
-    fclose(f);
-    free(content);
-}
-
 // -----------------------------------------------------------------------------
 // !! STRING MANIPULATION !!
+bool sv_eq(strview a, strview b) {
+    return a.len == b.len && memcmp(a.ptr, b.ptr, a.len) == 0;
+}
+
 strview sv_find(strview haystack, strview needle) {
     if (needle.len == 0 || needle.len > haystack.len) {
         return { nullptr, 0 };
@@ -88,9 +48,6 @@ strview sv_find(strview haystack, strview needle) {
     }
 
     return { nullptr, 0 };
-}
-strview sv_find(strview haystack, const char *needle) {
-    return sv_find(haystack, sv(needle));
 }
 
 void sv_split(strview str, strview delim, strview **out) {
@@ -115,9 +72,6 @@ void sv_split(strview str, strview delim, strview **out) {
         pos = end + delim.len; // skip over the whole delimiter
     }
 }
-void sv_split(strview str, const char *delim, strview **out) {
-    sv_split(str, sv(delim), out);
-}
 
 bool sv_split_once(strview str, strview delim, strview* first, strview* second) {
     strview found = sv_find(str, delim);
@@ -131,8 +85,46 @@ bool sv_split_once(strview str, strview delim, strview* first, strview* second) 
     *second = { found.ptr + delim.len, str.len - pos - delim.len };
     return true;
 }
-bool sv_split_once(strview str, const char *delim, strview* first, strview* second) {
-    return sv_split_once(str, sv(delim), first, second);
+
+bool sv_next_int(strview *str, i64 *out) {
+    u64 i = 0;
+    for (; i < str->len; i++) {
+        if (str->ptr[i] == '-' && (i + 1) < str->len && is_digit(str->ptr[i+1])) {
+            break;
+        }
+        if (is_digit(str->ptr[i])) {
+            break;
+        }
+    }
+    if (i >= str->len) {
+        // Cannot find the start of a number in the string
+        return false;
+    }
+    *out = 0;
+    
+    i8 sign = 1;
+    if (str->ptr[i] == '-') {
+        sign = -1;
+        i++;
+    }
+    
+    while (i < str->len && is_digit(str->ptr[i])) {
+        *out *= 10;
+        *out += (str->ptr[i++] - '0');
+    }
+    *str = sv_substr(*str, i);
+    *out *= sign;
+    return true;
+}
+
+strview sv_substr(strview str, u64 start) {
+    assert(start <= str.len);
+    return { str.ptr + start, str.len - start };
+}
+strview sv_substr(strview str, u64 start, u64 len) {
+    assert(start <= str.len);
+    assert(len <= str.len - start);
+    return { str.ptr + start, len };
 }
 // -----------------------------------------------------------------------------
 // !! TIMER !!

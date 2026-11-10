@@ -2,6 +2,7 @@
 
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 #include <type_traits>
 
 #include "types.hpp"
@@ -38,9 +39,35 @@ void arr_push(T **a, std::type_identity_t<T> v) {
 }
 
 template <typename T>
-void arr_popback(T *a) {
+T arr_popback(T *a) {
     assert(arr_size(a) > 0);
+    T val = a[arr_size(a) - 1];
     arr_header(a)->size--;
+    return val;
+}
+
+template <typename T>
+T *arr_last(T *a) {
+    assert(arr_size(a) > 0);
+    return &a[arr_size(a)-1];
 }
 
 template <typename T> void arr_erase(T *a, u64 i) { _arr_erase(a, i); }
+
+template <typename T>
+void arr_swap_remove(T *a, u64 i) {
+    assert(i < arr_size(a));
+
+    a[i] = a[arr_size(a)-1];
+    arr_header(a)->size--;
+}
+
+template <typename T>
+T *arr_copy(T *a) {
+    T *out = arr_init<T>(arr_cap(a));
+    arr_header(out)->size = arr_size(a);
+
+    u64 bytes = arr_size(a) * arr_item_size(a);
+    memcpy_s(out, bytes, a, bytes);
+    return out;
+}

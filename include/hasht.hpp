@@ -4,6 +4,7 @@
 #include <bit>
 #include <stdlib.h>
 
+#include "grid.hpp"
 #include "parse.hpp"
 #include "types.hpp"
 
@@ -22,6 +23,10 @@ inline u64 hash(strview key) {
         h *= 0x100000001b3ull;
     }
     return hash(h);
+}
+inline u64 hash(vec2 key) {
+    u64 packed = ((u64)(u32)key.x << 32) | (u32)key.y;
+    return hash(packed);
 }
 
 template <typename T>

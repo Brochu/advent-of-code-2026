@@ -5,6 +5,7 @@
 
 #include "darray.hpp"
 #include "day.hpp"
+#include "grid.hpp"
 #include "parse.hpp"
 #include "timer.hpp"
 #include "types.hpp"
@@ -198,3 +199,22 @@ void _arr_erase(void *arr, u64 i) {
     h->size--;
 }
 // -----------------------------------------------------------------------------
+
+// -----------------------------------------------------------------------------
+// !! GRID !!
+extern const vec2 DIRS4[4] = {
+    {  0,  1 },
+    {  1,  0 },
+    {  0, -1 },
+    { -1,  0 },
+};
+extern const vec2 DIRS8[8] = {
+    {  0,  1 },
+    {  1,  1 },
+    {  1,  0 },
+    {  1, -1 },
+    {  0, -1 },
+    { -1, -1 },
+    { -1,  0 },
+    { -1,  1 },
+};

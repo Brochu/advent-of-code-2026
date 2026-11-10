@@ -42,8 +42,8 @@ struct hash_table {
     static hash_table init(u64 capacity = _HASH_TABLE_CAPACITY);
     bool has(K key);
     V *get(K key);
-
     void put(K key, V val);
+    void clear();
     void free_hash();
     
 private:
@@ -123,6 +123,12 @@ void hash_table<K, V>::put(K key, V val) {
         values[index] = val;
         size++;
     }
+}
+
+template <typename K, typename V>
+void hash_table<K, V>::clear() {
+    size = 0;
+    memset(used, 0, cap * sizeof(char));
 }
 
 template <typename K, typename V>
